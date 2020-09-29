@@ -406,7 +406,8 @@ class _AwsomeVideoPlayerState extends State<AwsomeVideoPlayer>
     final netRegx = new RegExp(r'^(http|https):\/\/([\w.]+\/?)\S*');
     final fileRegx = new RegExp(r'^(file):\/\/([\w.]+\/?)\S*');
     final isNetwork = netRegx.hasMatch(widget.dataSource);
-    final isFile = fileRegx.hasMatch(widget.dataSource);
+    // final isFile = fileRegx.hasMatch(widget.dataSource); 2020-9-30 04:37:23
+    final isFile = widget.dataSource is File;
     if (isNetwork) {
       return VideoPlayerController.network(widget.dataSource);
     } else if (isFile) {
