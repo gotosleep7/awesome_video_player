@@ -38,6 +38,7 @@ class AwsomeVideoPlayer extends StatefulWidget {
     this.onnetwork,
     this.onfullscreen,
     this.onpop,
+    this.dataSourceType,
   })  : playOptions = playOptions ?? VideoPlayOptions(),
         videoStyle = videoStyle ?? VideoStyle(),
         super(key: key);
@@ -76,11 +77,24 @@ class AwsomeVideoPlayer extends StatefulWidget {
 
   /// 屏幕亮度回调
   final VideoCallback<bool> onfullscreen;
+
   //顶部控制栏点击返回回调
   final VideoCallback<VideoPlayerValue> onpop;
 
   /// 进度被拖拽的回调
   final VideoProgressDragHandle onprogressdrag;
+
+  /// 资源类型 [netDataSourceType]网络资源,[fileDataSourceType]文件资源 ，手机中的,[assetDataSourceType]asset下的资源   2020-9-30 04:56:41
+  final int dataSourceType;
+
+  /// 网络资源 http https
+  static const int netDataSourceType = 0;
+
+  /// 文件资源 ，手机中的
+  static const int fileDataSourceType = 1;
+
+  /// asset 下的资源
+  static const int assetDataSourceType = 2;
 
   @override
   _AwsomeVideoPlayerState createState() => _AwsomeVideoPlayerState();
@@ -404,18 +418,26 @@ class _AwsomeVideoPlayerState extends State<AwsomeVideoPlayer>
 
   /// 创建video controller
   VideoPlayerController createVideoPlayerController() {
-    final netRegx = new RegExp(r'^(http|https):\/\/([\w.]+\/?)\S*');
-    final fileRegx = new RegExp(r'^(file):\/\/([\w.]+\/?)\S*');
-    final isNetwork = netRegx.hasMatch(widget.dataSource);
+    // final netRegx = new RegExp(r'^(http|https):\/\/([\w.]+\/?)\S*');
+    // final fileRegx = new RegExp(r'^(file):\/\/([\w.]+\/?)\S*');
+    // final isFile = widget.dataSource is File;
+    // final isNetwork = netRegx.hasMatch(widget.dataSource);
     // final isFile = fileRegx.hasMatch(widget.dataSource); 2020-9-30 04:37:23
-    final isFile = widget.dataSource is File;
-    if (isNetwork) {
-      return VideoPlayerController.network(widget.dataSource);
-    } else if (isFile) {
-      return VideoPlayerController.file(widget.dataSource);
-    } else {
-      return VideoPlayerController.asset(widget.dataSource);
+    switch(widget.dataSourceType){
+      case AwsomeVideoPlayer.netDataSourceType:
+        return VideoPlayerController.network(widget.dataSource);
+      case AwsomeVideoPlayer.fileDataSourceType:
+        return VideoPlayerController.file(widget.dataSource);
+      case AwsomeVideoPlayer.assetDataSourceType:
+        return VideoPlayerController.asset(widget.dataSource);
     }
+    // if (isNetwork) {
+    //   return VideoPlayerController.network(widget.dataSource);
+    // } else if (isFile) {
+    //   return VideoPlayerController.file(widget.dataSource);
+    // } else {
+    //   return VideoPlayerController.asset(widget.dataSource);
+    // }
   }
 
   //计算设备的宽高比
